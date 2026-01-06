@@ -1,0 +1,51 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    networks:
+      - app-net
+    ports:
+      - "127.0.0.1:3831:3831"
+      - "127.0.0.1:5831:5831"
+    command: sleep infinity
+
+  db:
+    image: postgres:16.4
+    hostname: app-net-db
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Create test database
+      - ../docker/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "127.0.0.1:7831:7831"
+    networks:
+      - app-net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app-net
+      POSTGRES_PORT: 7831
+    command: -p 7831
+
+  adminer:
+    image: adminer:5
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:4831:8080"
+    networks:
+      - app-net
+    environment:
+      ADMINER_DEFAULT_SERVER: db:7831
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
