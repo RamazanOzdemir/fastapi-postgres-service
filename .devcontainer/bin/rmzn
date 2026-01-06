@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_DIR="$SCRIPT_DIR/../.."
+
+COMMAND="$1"
+
+__format__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local format_with_ruff="ruff format"
+
+    echo "$switch_dir && $format_with_ruff"
+}
+
+format() {
+    eval $(__format__)
+}
+
+__lint__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local lint_with_ruff="ruff check"
+    local check_formatting_with_ruff="ruff format --check"
+
+    # https://github.com/microsoft/pylance-release/discussions/3638
+    # Right now pyright does not share config with pylance in VS Code.
+    # We are running typechecker but some errors might be inconsistent
+    # between CLI and the editor. That is why we always treat the result 
+    # as success.
+    local type_check="(pyright || true)"
+
+    echo "$switch_dir && $lint_with_ruff && $check_formatting_with_ruff && $type_check"
+}
+
+lint() {
+    eval $(__lint__)
+}
+
+__test__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local test_with_pytest="pytest"
+
+    echo "$switch_dir && $test_with_pytest"
+}
+
+test() {
+    eval $(__test__)
+}
+
+
+__update__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local remove_old_venv="rm -rf .venv"
+    local install_main_requirements="uv sync --frozen --all-packages"
+    echo "$switch_dir && $remove_old_venv && $install_main_requirements"
+}
+
+update() {
+    eval $(__update__)
+}
+
+
+__start__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local start_fastapi="uvicorn app.main:app --proxy-headers --reload --host 0.0.0.0 --port 5831"
+
+    echo "$switch_dir && $start_fastapi"
+}
+
+start() {
+    eval $(__start__)
+}
+
+__reset__database__() {
+    local switch_dir="cd $PROJECT_DIR/api"
+    local drop_db="docker exec -i app-net_devcontainer-db-1 psql -U postgres -p 7831 -c 'DROP DATABASE IF EXISTS \"app-net\" WITH (FORCE);'"
+    local create_db="docker exec -i app-net_devcontainer-db-1 psql -U postgres -p 7831 -d postgres -c 'CREATE DATABASE\"app-net\"'"
+    local run_migrations="alembic upgrade head"
+
+    echo "$switch_dir && $drop_db && $create_db && $run_migrations"
+}
+
+reset__database() {
+    eval $(__reset__database__)
+}
+
+
+shutdown() {
+    docker container stop app-net_devcontainer-adminer-1
+    docker container stop app-net_devcontainer-db-1
+    docker container stop app-net_devcontainer-mailhog-1
+    docker container stop app-net_devcontainer-devcontainer-1
+}
+
+$COMMAND
