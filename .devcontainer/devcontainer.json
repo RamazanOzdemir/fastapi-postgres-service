@@ -36,12 +36,12 @@
       "settings": {
         "extensions.ignoreRecommendations": true,
         "python.analysis.autoImportCompletions": true,
-        "python.analysis.extraPaths": ["./backend"],
+        "python.analysis.extraPaths": ["./api"],
         "python.analysis.languageServerMode": "full",
         "python.analysis.typeCheckingMode": "standard",
-        "python.autoComplete.extraPaths": ["./backend"],
+        "python.autoComplete.extraPaths": ["./api"],
         "python.createEnvironment.trigger": "off",
-        "python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",
+        "python.defaultInterpreterPath": "/workspace/api/.venv/bin/python",
         "python.globalModuleInstallation": true,
         "python.terminal.activateEnvironment": false,
         "pythonTestExplorer.testFramework": "pytest",
@@ -70,18 +70,18 @@
               "request": "launch",
               "program": "${file}",
               "console": "integratedTerminal",
-              "cwd": "${workspaceFolder}/backend",
+              "cwd": "${workspaceFolder}/api",
               "purpose": ["debug-in-terminal"],
               "env": {
-                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/backend"
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/api"
               },
               "justMyCode": true
             },
             {
-              "name": "Backend",
+              "name": "API",
               "type": "debugpy",
               "request": "launch",
-              "cwd": "${workspaceFolder}/backend",
+              "cwd": "${workspaceFolder}/api",
               "module": "uvicorn",
               "args": [
                 "app.main:app",

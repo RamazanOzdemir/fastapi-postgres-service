@@ -61,7 +61,7 @@ RUN curl -LsSf https://astral.sh/uv/0.9.10/install.sh | sh
 RUN uv python install --default "$PYTHON_DEFAULT_VERSION"
 
 
-# Add /workspace/backend/.venv/bin to PATH
-RUN echo 'export PATH="/workspace/backend/.venv/bin:$PATH"' >> "/home/appuser/.bashrc"
+# Add /workspace/api/.venv/bin to PATH
+RUN echo 'export PATH="/workspace/api/.venv/bin:$PATH"' >> "/home/appuser/.bashrc"
 # Add git auto-completion to the end of bash config
 RUN echo "source /usr/share/bash-completion/completions/git" >> "/home/appuser/.bashrc"
