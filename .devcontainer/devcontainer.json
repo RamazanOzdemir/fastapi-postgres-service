@@ -1,0 +1,106 @@
+{
+  "name": "fastapi-postgres-service",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "mounts": [
+    // Use ssh keys and configs from host (so that git works correctly)
+    "type=bind,source=${localEnv:HOME}/.ssh,target=/home/appuser/.ssh,readonly",
+    // Allow to run docker commands on the host.
+    "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock",
+    // Persist bash command history between container rebuilds.
+    "type=volume,source=fastapi-bashhistory,target=/commandhistory"
+  ],
+  "postAttachCommand": "sudo chmod 777 /var/run/docker.sock && appuser update",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Editor extensions.
+        "eamodio.gitlens",
+        "ms-azuretools.vscode-docker",
+        "gitlab.gitlab-workflow",
+        "SocketSecurity.vscode-socket-security",
+        // Python extensions.
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "charliermarsh.ruff",
+        // Testing extensions
+        "hbenl.vscode-test-explorer",
+        "ms-vscode.test-adapter-converter",
+        "vitest.explorer",
+        "LittleFoxTeam.vscode-python-test-adapter",
+        // Spell-checking
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "extensions.ignoreRecommendations": true,
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.extraPaths": ["./backend"],
+        "python.analysis.languageServerMode": "full",
+        "python.analysis.typeCheckingMode": "standard",
+        "python.autoComplete.extraPaths": ["./backend"],
+        "python.createEnvironment.trigger": "off",
+        "python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",
+        "python.globalModuleInstallation": true,
+        "python.terminal.activateEnvironment": false,
+        "pythonTestExplorer.testFramework": "pytest",
+        "python.testing.pytestPath": "/home/appuser/.pyenv/shims/pytest",
+        "[python]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit", // fixes all ruff linting errors
+            "source.organizeImports": "explicit" // then organizes imports
+          }
+        },
+
+        "files.exclude": {
+          "**/__pycache__": true, // hides python cache dirs from explorer,
+          "**/.ruff_cache": true, // hides ruff cache dirs from explorer
+          "**/.pytest_cache": true // hides pytest cache dirs from explorer
+        },
+
+        "launch": {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "name": "Current File",
+              "type": "debugpy",
+              "request": "launch",
+              "program": "${file}",
+              "console": "integratedTerminal",
+              "cwd": "${workspaceFolder}/backend",
+              "purpose": ["debug-in-terminal"],
+              "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/backend"
+              },
+              "justMyCode": true
+            },
+            {
+              "name": "Backend",
+              "type": "debugpy",
+              "request": "launch",
+              "cwd": "${workspaceFolder}/backend",
+              "module": "uvicorn",
+              "args": [
+                "app.main:app",
+                "--proxy-headers",
+                "--reload",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "5831"
+              ],
+              "jinja": true,
+              "justMyCode": true
+            }
+          ],
+          "compounds": []
+        }
+      }
+    }
+  },
+  "remoteUser": "appuser",
+  "containerUser": "appuser"
+}
