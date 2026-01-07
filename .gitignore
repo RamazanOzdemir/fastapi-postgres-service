@@ -1,0 +1,9 @@
+.vscode
+.idea
+.env
+.env*
+*.patch
+*.ipynb
+.DS_Store
+pgadmin
+tmp
