@@ -1,0 +1,6 @@
+target-version = "py314"
+
+[lint]
+select = ["C4", "DTZ", "E", "ERA", "F", "I", "N", "PERF", "PIE", "PL", "PT", "Q", "RET", "SIM", "SLOT", "T10", "T20", "TID", "UP"]
+ignore = ["E501", "PLR0912", "PLR0913", "PLR0917", "PLW3201"]
+preview = true
