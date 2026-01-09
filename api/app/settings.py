@@ -13,7 +13,7 @@ class EnvMode(Enum):
 
 
 class Settings(BaseSettings):
-    app_name: str = "Applicant Task"
+    app_name: str = "Fastapi Postgres Service"
     app_version: str = "0.0.0"
     env_mode: EnvMode = EnvMode.DEV
     cookie_domain: str = "localhost"
@@ -25,8 +25,8 @@ class Settings(BaseSettings):
 
     db_user: str = "postgres"
     db_password: str = "password"
-    db_hostname: str = "applicant-task-db"
-    db_database: str = "applicant-task"
+    db_hostname: str = "app-net-db"
+    db_database: str = "app-net"
     db_port: int = 7831
 
     model_config = SettingsConfigDict(
